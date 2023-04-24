@@ -3,11 +3,12 @@ import java.io.IOException;
 import java.net.StandardSocketOptions;
 import java.util.Random;
 import java.util.Scanner;
-//hkbkj
+//hkbkjkhb
 public class Main {
     public static Scanner scanner;
     public static Random rnd;
 
+    int x = 8;
 //    public static int[][] findSize(String size){
 //        // findSize is a function that takes one argument(String size), and return
 //        // a 2d array where each cell defines a specific type of ship where the first
