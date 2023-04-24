@@ -3,7 +3,7 @@ import java.io.IOException;
 import java.net.StandardSocketOptions;
 import java.util.Random;
 import java.util.Scanner;
-//hkbkjkhbhb
+//hkbkjkhb
 public class Main {
     public static Scanner scanner;
     public static Random rnd;
