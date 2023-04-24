@@ -6,7 +6,6 @@ import java.util.Scanner;
 public class Main {
     public static Scanner scanner;
     public static Random rnd;
-//bkb
 //    public static int[][] findSize(String size){
 //        // findSize is a function that takes one argument(String size), and return
 //        // a 2d array where each cell defines a specific type of ship where the first
@@ -47,6 +46,148 @@ public class Main {
 //    }
 //
 
+    public static int[][] splitInput(String information){
+        // This function takes a string as an argument and return a 2d array.
+        // The returned array is the given string split by " " and "X".
+        String[] info = information.split(" ");
+        int[][] sizes = new int[info.length][2];
+        for (int i = 0; i < info.length; i++){
+            String[] temp = info[i].split("X");
+            sizes[i][0] = Integer.valueOf(temp[0]);
+            sizes[i][1] = Integer.valueOf(temp[1]);
+        }
+        return sizes;
+    }
+
+    public static void printBoard(String[][] board){
+        // This function takes a 2d String array and prints it.
+        // The printed output is the current game-board.
+        System.out.println("Your current game board:");
+        for(int i = 0; i<board.length;i++){
+            for(int j = 0; j<board[0].length;j++){
+               System.out.print(board[i][j]);
+               if(j != board[0].length-1){
+                   System.out.print(" ");
+               }
+            }
+            System.out.println();
+        }
+    }
+
+    public static int[] placement(String placement){
+        // This function takes a String as an argument and return an int array.
+        // The returned value is the string split using ", ".
+        // Check
+        // Check
+        // Check
+        // Check
+        // Check
+        // Check
+        String[] temp = placement.split(", ");
+        int[] temp1 = new int[3];
+        for (int i = 0; i < temp.length; i++){
+            temp1[i] = Integer.valueOf(temp[i]);
+        }
+        return temp1;
+    }
+
+    public static boolean checkLegal(String[][] board, int[] placement, int size){
+        // This function takes 3 arguments, cuurent gameboard, placement of the ship, the size of the ship, it
+        // returns true if it is legal to place the ship else it returns false and prints an output that matches the
+        // illegal move, it checks if the move is legal or not according to a given arrangement.
+        String[][] tempBoard = new String[board.length][board[0].length];
+        for (int i = 0; i < board.length; i++){
+            for (int j = 0; j < board[0].length; j++){
+                tempBoard[i][j] = board[i][j];
+            }
+        }
+        if(placement[2] != 0 && placement[2] != 1){
+            System.out.println("Illegal orientation, try again!");
+            return false;
+        }
+        if (placement[0] < 0 | placement[0] > board.length-1 | placement[1] < 0 | placement[1] > board[0].length-1){
+            System.out.println("Illegal tile, try again!");
+            return false;
+        }
+        if(placement[2] == 0){
+            if (placement[0]+size-1 > board.length){
+                System.out.println("Battleship exceeds the boundaries of the board, try again!");
+                return false;
+            }
+        }
+        if (placement[2] == 1){
+            if (placement[1]+size-1<0){
+                System.out.println("Battleship exceeds the boundaries of the board, try again!");
+                return false;
+            }
+        }
+        if (placement[2] == 0){
+            for (int i = 0; i < size; i++){
+                if(board[placement[0]+i][placement[1]] == "#"){
+                    System.out.println("Battleship overlaps another battleship, try again!");
+                    return false;
+                }
+            }
+        }
+        if (placement[2] == 1){
+            for (int i = 0; i < size; i++){
+                if (board[placement[0]][placement[1]+i] == "#"){
+                    System.out.println("Battleship overlaps another battleship, try again!");
+                    return false;
+                }
+            }
+        }
+        if (placement[2] == 0){
+            for (int i = 0; i < size; i++){
+                if (checkAround(board, placement[0]+i, placement[1]) == false){
+                    System.out.println("Adjacent battleship detected, try again!");
+                    return false;
+                }
+            }
+
+        }
+        if (placement[2] == 1){
+            for (int i = 0; i < size; i++){
+                if (checkAround(board, placement[0], placement[1]+i) == false){
+                    System.out.println("Adjacent battleship detected, try again!");
+                    return false;
+                }
+            }
+
+        }
+        placeShip(board,placement,size);
+        return true;
+
+    }
+
+    public static boolean checkAround(String[][] board,int x, int y){
+        // This function takes 3 arguments, current board game, and coordinates of a ship, it checks the
+        // adjacent of the ship, returns true only if its legal.
+        for (int i = -1; i < 2; i++){
+            for (int j = -1; j < 2; j++){
+                if (board[x+i][y+j]=="#"){
+                    System.out.println("Adjacent battleship detected, try again!");
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public static void placeShip(String[][] board, int[] placement, int size){
+        // This function takes 3 arguments and places the ship according to the given placement and size.
+        if (placement[2] == 0){
+            for (int i = 0;i < size; i++){
+                board[placement[0]][placement[1]+i] = "#";
+            }
+        }
+        if (placement[2] == 1){
+            for (int i = 0;i < size; i++){
+                board[placement[0]+i][placement[1]] = "#";
+            }
+        }
+    }
+
     public static void battleshipGame() {
 //        System.out.println("Enter the board size");
 //        int[][] dimensions = findSize(scanner.nextLine()); // Holds the value of the size of the board.
@@ -79,6 +220,26 @@ public class Main {
 //        int b = Integer.valueOf(locOri.split(",")[1]);
 //        int Orientation = Integer.valueOf(locOri.split(",")[2]);
 //
+
+        System.out.println("Enter the board size");
+        int[][] boardSize = splitInput(scanner.next());
+        System.out.println("Enter the battleships sizes");
+        int[][] battleShipSizes = splitInput(scanner.nextLine());
+        String[][] board = new String[boardSize[0][0]+1][boardSize[0][1]+1];
+        for (int i = 0; i < boardSize[0][0]+1; i++){
+            for (int j = 0; j < boardSize[0][0]+1; j++){
+                if (i == 0){
+                    board[i][j] = String.valueOf(j-1);
+                }
+                if (j == 0){
+                    board[i][j] = String.valueOf(i-1);
+                }
+                if(i!=0 && j!=0){
+                    board[i][j] = "–";
+                }
+            }
+        }
+        board[0][0] = " ";
 
     }
 
