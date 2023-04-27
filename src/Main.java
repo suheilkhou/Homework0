@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.StandardSocketOptions;
 import java.util.Random;
 import java.util.Scanner;
@@ -59,16 +60,21 @@ public class Main {
         return sizes;
     }
 
-    public static void printBoard(String[][] board){
+    public static void printBoard(String[][] board, int a){
         // This function takes a 2d String array and prints it.
         // The printed output is the current game-board.
-        System.out.println("Your current game board:");
+        if(a == 0){
+            System.out.println("Your current game board:");
+        }
+        if (a == 1){
+            System.out.println("Your current guessing board:");
+        }
         for(int i = 0; i<board.length;i++){
             for(int j = 0; j<board[0].length;j++){
-               System.out.print(board[i][j]);
-               if(j != board[0].length-1){
-                   System.out.print(" ");
-               }
+                System.out.print(board[i][j]);
+                if(j != board[0].length-1){
+                    System.out.print(" ");
+                }
             }
             System.out.println();
         }
@@ -77,17 +83,13 @@ public class Main {
     public static int[] placement(String placement){
         // This function takes a String as an argument and return an int array.
         // The returned value is the string split using ", ".
-        // Check
-        // Check
-        // Check
-        // Check
-        // Check
-        // Check
         String[] temp = placement.split(", ");
         int[] temp1 = new int[3];
         for (int i = 0; i < temp.length; i++){
             temp1[i] = Integer.valueOf(temp[i]);
         }
+        temp1[0] += 1;
+        temp1[1] += 1;
         return temp1;
     }
 
@@ -110,18 +112,22 @@ public class Main {
             return false;
         }
         if(placement[2] == 0){
-            if (placement[0]+size-1 > board.length){
-                System.out.println("Battleship exceeds the boundaries of the board, try again!");
-                return false;
+            for (int i = 0; i < size; i++) {
+                if (placement[1]  - 2 + i> board.length) {
+                    System.out.println("Battleship exceeds the boundaries of the board, try again!");
+                    return false;
+                }
             }
         }
         if (placement[2] == 1){
-            if (placement[1]+size-1<0){
-                System.out.println("Battleship exceeds the boundaries of the board, try again!");
-                return false;
+            for (int i = 0; i < size; i++) {
+                if (placement[0] - 2  + i > board[0].length) {
+                    System.out.println("Battleship exceeds the boundaries of the board, try again!");
+                    return false;
+                }
             }
         }
-        if (placement[2] == 0){
+        if (placement[2] == 1){
             for (int i = 0; i < size; i++){
                 if(board[placement[0]+i][placement[1]] == "#"){
                     System.out.println("Battleship overlaps another battleship, try again!");
@@ -129,7 +135,7 @@ public class Main {
                 }
             }
         }
-        if (placement[2] == 1){
+        if (placement[2] == 0){
             for (int i = 0; i < size; i++){
                 if (board[placement[0]][placement[1]+i] == "#"){
                     System.out.println("Battleship overlaps another battleship, try again!");
@@ -137,19 +143,17 @@ public class Main {
                 }
             }
         }
-        if (placement[2] == 0){
+        if (placement[2] == 1){
             for (int i = 0; i < size; i++){
                 if (checkAround(board, placement[0]+i, placement[1]) == false){
-                    System.out.println("Adjacent battleship detected, try again!");
                     return false;
                 }
             }
 
         }
-        if (placement[2] == 1){
+        if (placement[2] == 0){
             for (int i = 0; i < size; i++){
                 if (checkAround(board, placement[0], placement[1]+i) == false){
-                    System.out.println("Adjacent battleship detected, try again!");
                     return false;
                 }
             }
@@ -163,16 +167,50 @@ public class Main {
     public static boolean checkAround(String[][] board,int x, int y){
         // This function takes 3 arguments, current board game, and coordinates of a ship, it checks the
         // adjacent of the ship, returns true only if its legal.
-        for (int i = -1; i < 2; i++){
-            for (int j = -1; j < 2; j++){
-                if (board[x+i][y+j]=="#"){
-                    System.out.println("Adjacent battleship detected, try again!");
-                    return false;
+        if (x == board.length-1 && y != board[0].length-1){
+            for (int i = -1; i < 1; i++){
+                for (int j = -1; j < 2; j++){
+                    if (board[x+i][y+j]=="#"){
+                        System.out.println("Adjacent battleship detected, try again!");
+                        return false;
+                    }
+                }
+            }
+        } else if (x != board.length-1 && y == board[0].length-1){
+            for (int i = -1; i < 2; i++){
+                for (int j = -1; j < 1; j++){
+                    if (board[x+i][y+j]=="#"){
+                        System.out.println("Adjacent battleship detected, try again!");
+                        return false;
+                    }
                 }
             }
         }
+        else if (x == board.length-1 && y == board[0].length-1) {
+            for (int i = -1; i < 1; i++) {
+                for (int j = -1; j < 1; j++) {
+                    if (board[x + i][y + j] == "#") {
+                        System.out.println("Adjacent battleship detected, try again!");
+                        return false;
+                    }
+                }
+            }
+        }
+        else{
+            for (int i = -1; i < 2; i++){
+                for (int j = -1; j < 2; j++){
+                    if (board[x+i][y+j]=="#"){
+                        System.out.println("Adjacent battleship detected, try again!");
+                        return false;
+                    }
+                }
+            }
+        }
+
         return true;
     }
+
+
 
     public static void placeShip(String[][] board, int[] placement, int size){
         // This function takes 3 arguments and places the ship according to the given placement and size.
@@ -187,6 +225,46 @@ public class Main {
             }
         }
     }
+
+    public static void setUpBoard(String[][] board, int[][] battleShipSizes){
+        for (int i = 0; i < battleShipSizes.length ;i++){
+            for(int j = 0; j < battleShipSizes[i][0]; j++){
+                System.out.println("Enter location and orientation for battleship of size "+battleShipSizes[i][1]);
+                boolean flag = false;
+                while(flag == false){
+                    String placementInput = scanner.nextLine();
+
+                    if (checkLegal(board,placement(placementInput),battleShipSizes[i][1])==true){
+                        flag = true;
+                        printBoard(board,0);
+                    }
+                }
+
+            }
+        }
+    }
+
+    public static void setUpPc(String[][] board, int[][] battleShipSizes){
+        for (int i = 0; i < battleShipSizes.length ;i++){
+            for(int j = 0; j < battleShipSizes[i][0]; j++){
+                boolean flag = false;
+                while(flag == false){
+                    int x = rnd.nextInt(board.length);
+                    int y = rnd.nextInt(board[0].length);
+                    int orientationPc = rnd.nextInt(1);
+                    String placementInputPc = x+", "+y+", "+orientationPc;
+
+                    if (checkLegal(board,placement(placementInputPc),battleShipSizes[i][1])==true){
+                        flag = true;
+                        printBoard(board,0);
+                    }
+                }
+
+            }
+        }
+    }
+
+
 
     public static void battleshipGame() {
 //        System.out.println("Enter the board size");
@@ -222,26 +300,38 @@ public class Main {
 //
 
         System.out.println("Enter the board size");
-        int[][] boardSize = splitInput(scanner.next());
+        int[][] boardSize = splitInput(scanner.nextLine());
         System.out.println("Enter the battleships sizes");
         int[][] battleShipSizes = splitInput(scanner.nextLine());
         String[][] board = new String[boardSize[0][0]+1][boardSize[0][1]+1];
+        String[][] guessingBoard = new String[boardSize[0][0]+1][boardSize[0][1]+1];
         for (int i = 0; i < boardSize[0][0]+1; i++){
             for (int j = 0; j < boardSize[0][0]+1; j++){
                 if (i == 0){
                     board[i][j] = String.valueOf(j-1);
+                    guessingBoard[i][j] = String.valueOf(j-1);
                 }
                 if (j == 0){
                     board[i][j] = String.valueOf(i-1);
+                    guessingBoard[i][j] = String.valueOf(i-1);
                 }
                 if(i!=0 && j!=0){
                     board[i][j] = "–";
+                    guessingBoard[i][j] = "–";
                 }
             }
         }
         board[0][0] = " ";
+        guessingBoard[0][0]= " ";
 
+        printBoard(board,0);
+        setUpBoard(board,battleShipSizes);
+        printBoard(guessingBoard,1);
     }
+
+
+
+
 
 
     public static void main(String[] args) throws IOException {
@@ -249,7 +339,6 @@ public class Main {
         scanner = new Scanner(new File(path));
         int numberOfGames = scanner.nextInt();
         scanner.nextLine();
-
         System.out.println("Total of " + numberOfGames + " games.");
 
         for (int i = 1; i <= numberOfGames; i++) {
