@@ -117,7 +117,7 @@ public class Main {
         }
         if (placement[2] == 0) {
             for (int i = 0; i < size; i++) {
-                if (placement[1] - 2 + i > board.length) {
+                if (placement[1] + i >= board[0].length) {
                     if (user == "user") {
                         System.out.println("Battleship exceeds the boundaries of the board, try again!");
                     }
@@ -127,7 +127,7 @@ public class Main {
         }
         if (placement[2] == 1) {
             for (int i = 0; i < size; i++) {
-                if (placement[0] - 2 + i > board[0].length) {
+                if (placement[0] + i >= board.length) {
                     if (user == "user") {
                         System.out.println("Battleship exceeds the boundaries of the board, try again!");
                     }
@@ -266,8 +266,8 @@ public class Main {
             for (int j = 0; j < battleShipSizes[i][0]; j++) {
                 boolean flag = false;
                 while (flag == false) {
-                    int x = rnd.nextInt(board.length);
-                    int y = rnd.nextInt(board[0].length);
+                    int x = rnd.nextInt(board.length-1);
+                    int y = rnd.nextInt(board[0].length-1);
                     int orientationPc = rnd.nextInt(1);
                     String placementInputPc = x + ", " + y + ", " + orientationPc;
 
@@ -288,15 +288,15 @@ public class Main {
         return counter;
     }
 
-    public static boolean shoot(int x, int y, String[][] userBoard, String[][] userGuessingBoard, String[][] pcBoard, String[][] pcGuessingBoard, String user, int userNumberOfShips,int pcNumberOfShips) {
+    public static String shoot(int x, int y, String[][] userBoard, String[][] userGuessingBoard, String[][] pcBoard, String[][] pcGuessingBoard, String user, int userNumberOfShips,int pcNumberOfShips) {
         if (user == "user") {
             if (x < 0 | x > userBoard.length - 1 | y < 0 | y > userBoard[0].length - 1) {
                 System.out.println("Illegal tile, try again!");
-                return false;
+                return "false";
             }
             if (userGuessingBoard[x][y] == "V" || userGuessingBoard[x][y] == "X") {
                 System.out.println("Tile already attacked, try again!");
-                return false;
+                return "false";
             }
             if (pcBoard[x][y] == "#") {
                 System.out.println("That is a hit!");
@@ -308,23 +308,24 @@ public class Main {
                 }
                 if (pcNumberOfShips == 0) {
                     System.out.println("You won the game!");
+                    return "done";
                 }
-                return true;
+                return "true";
             }
             if (pcBoard[x][y] == "–"){
                 userGuessingBoard[x][y] = "X";
                 System.out.println("That is a miss!");
-                return true;
+                return "true";
             }
         }
 
 
         if (user == "pc") {
             if (x < 0 | x > pcBoard.length - 1 | y < 0 | y > pcBoard[0].length - 1) {
-                return false;
+                return "false";
             }
             if (pcGuessingBoard[x][y] == "V" || pcGuessingBoard[x][y] == "X") {
-                return false;
+                return "false";
             }
             if (userBoard[x][y] == "#") {
                 pcGuessingBoard[x][y] = "V";
@@ -335,15 +336,16 @@ public class Main {
                 }
                 if (userNumberOfShips == 0) {
                     System.out.println("You lost ):!");
+                    return "done";
                 }
-                return true;
+                return "true";
             }
             if (userBoard[x][y] == "–"){
                 pcGuessingBoard[x][y] = "X";
-                return true;
+                return "true";
             }
         }
-        return true;
+        return "true";
 
     }
 
@@ -385,29 +387,6 @@ public class Main {
     }
 
 
-//        //if (x < 0 | x > board.length - 1 | y < 0 | y > board[0].length - 1) {
-//            if (user == "user") {
-//                System.out.println("Illegal tile, try again!");
-//            }
-//            return false;
-//        }
-//        if(board[x][y] == "V"){
-//            if (user == "user"){
-//                System.out.println("Tile already attacked, try again!");
-//            }
-//            return false;
-//        }
-//        if (board[x][y] == "–"){
-//            if (user == "user"){
-//                System.out.println("That is a miss!");
-//                guessingBoard[x][y] = "X";
-//            }else{
-//                guessingBoard[x][y] = "M";
-//            }
-//            return true;
-//        }
-//        return true;
-//        }
 
 
 
@@ -424,7 +403,7 @@ public class Main {
         String[][] pcBoard = new String[boardSize[0][0]+1][boardSize[0][1]+1];
         String[][] pcGuessingBoard = new String[boardSize[0][0]+1][boardSize[0][1]+1];
         for (int i = 0; i < boardSize[0][0]+1; i++){
-            for (int j = 0; j < boardSize[0][0]+1; j++){
+            for (int j = 0; j < boardSize[0][1]+1; j++){
                 if (i == 0){
                     board[i][j] = String.valueOf(j-1);
                     guessingBoard[i][j] = String.valueOf(j-1);
@@ -462,17 +441,36 @@ public class Main {
         while(userNumberOfShips > 0 && pcNumberOfShips > 0){
             System.out.println("Enter a tile to attack");
             int[] userCordinates = placement(scanner.nextLine());
-            while (shoot(userCordinates[0],userCordinates[1],board,guessingBoard,pcBoard,pcGuessingBoard,"user",userNumberOfShips,pcNumberOfShips)==false){
-
+            String status = shoot(userCordinates[0],userCordinates[1],board,guessingBoard,pcBoard,pcGuessingBoard,"user",userNumberOfShips,pcNumberOfShips);
+            while (status == "false"){
+                userCordinates = placement(scanner.nextLine());
+                status = shoot(userCordinates[0],userCordinates[1],board,guessingBoard,pcBoard,pcGuessingBoard,"user",userNumberOfShips,pcNumberOfShips);
+            }
+            if(status == "done"){
+                break;
             }
 
-            int x = rnd.nextInt(board.length-1);
-            int y = rnd.nextInt(board[0].length-1);
+
+            int x = rnd.nextInt(board.length);
+            int y = rnd.nextInt(board[0].length);
 
             x += 1;
             y += 1;
-            while (shoot(x,y,board,guessingBoard,pcBoard,pcGuessingBoard,"pc",userNumberOfShips,pcNumberOfShips)==false){
-
+            status = shoot(x,y,board,guessingBoard,pcBoard,pcGuessingBoard,"pc",userNumberOfShips,pcNumberOfShips);
+            while (status=="false"){
+                x = rnd.nextInt(board.length);
+                y = rnd.nextInt(board[0].length);
+                x += 1;
+                y += 1;
+                status = shoot(x,y,board,guessingBoard,pcBoard,pcGuessingBoard,"pc",userNumberOfShips,pcNumberOfShips);
+            }
+            x -= 1;
+            y -= 1;
+            System.out.println("The computer attacked ("+x+", "+y+")");
+            printBoard(board,0);
+            printBoard(guessingBoard,1);
+            if (status == "done"){
+                break;
             }
 
 
