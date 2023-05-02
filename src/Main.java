@@ -78,6 +78,7 @@ public class Main {
             }
             System.out.println();
         }
+        System.out.println();
     }
 
     public static int[] placement(String placement) {
@@ -302,7 +303,7 @@ public class Main {
                 System.out.println("That is a hit!");
                 userGuessingBoard[x][y] = "V";
                 pcBoard[x][y] = "X";
-                if (checkDrowned(pcBoard, x, y)==true){
+                if (checkIfDrowned(pcBoard, x, y)==true){
                     pcNumberOfShips -= 1;
                     System.out.println("The computer's battleships has been drowned, "+pcNumberOfShips+ " more battleships to go!");
                 }
@@ -328,9 +329,11 @@ public class Main {
                 return "false";
             }
             if (userBoard[x][y] == "#") {
+                System.out.println("The computer attacked ("+(x-1)+", "+(y-1)+")");
+                System.out.println("That is a hit!");
                 pcGuessingBoard[x][y] = "V";
                 userBoard[x][y] = "X";
-                if (checkDrowned(userBoard, x, y)==true){
+                if (checkIfDrowned(userBoard, x, y)==true){
                     userNumberOfShips -= 1;
                     System.out.println("Your battleship has been drowned, you have left " +userNumberOfShips+ " more battleships!");
                 }
@@ -342,6 +345,8 @@ public class Main {
             }
             if (userBoard[x][y] == "–"){
                 pcGuessingBoard[x][y] = "X";
+                System.out.println("The computer attacked ("+(x-1)+", "+(y-1)+")");
+                System.out.println("That is a miss!");
                 return "true";
             }
         }
@@ -386,6 +391,162 @@ public class Main {
         return true;
     }
 
+
+//    public static boolean checkDro(String[][] board, int x, int y){
+//        if (x == board.length - 1 && y != board[0].length - 1) {
+//            // bottom
+//            for (int i = -1; i < 1; i++) {
+//                for (int j = -1; j < 2; j++) {
+//                    if (board[x + i][y + j] == "#") {
+//                        return false;
+//                    }
+//                }
+//            }
+//        } else if (x != board.length - 1 && y == board[0].length - 1) {
+//            // right column
+//            for (int i = -1; i < 2; i++) {
+//                for (int j = -1; j < 1; j++) {
+//                    if (board[x + i][y + j] == "#") {
+//                        return false;
+//                    }
+//                }
+//            }
+//        } else if (x == board.length - 1 && y == board[0].length - 1) {
+//            // [n][m]
+//            for (int i = -1; i < 1; i++) {
+//                for (int j = -1; j < 1; j++) {
+//                    if (board[x + i][y + j] == "#") {
+//                        return false;
+//                    }
+//                }
+//            }
+//        } else {
+//            // No boards
+//            for (int i = -1; i < 2; i++) {
+//                for (int j = -1; j < 2; j++) {
+//                    if (board[x + i][y + j] == "#") {
+//                        return false;
+//                    }
+//                }
+//            }
+//        }
+//        return true;
+//    }
+//
+
+
+    public static boolean checkIfDrowned(String[][] board, int x, int y){
+        if (x == board.length - 1 && y == board[0].length - 1) {
+            // zawye
+            int i = 0;
+
+            while(x-i > 0 && board[x-i][y] != "–"){
+                //btl3 lfo2
+                if (board[x-i][y] == "#"){
+                    return false;
+                }
+                i += 1;
+            }
+            i = 0;
+            while (y-i > 0 && board[x][y - i] != "–"){
+                //bro7 shmal
+                if (board[x][y-i] == "#"){
+                    return false;
+                }
+                i += 1;
+            }
+        }else if (x != board.length - 1 && y == board[0].length - 1) {
+            // right column
+            int i = 0;
+
+            while (x - i > 0 && board[x - i][y] != "–") {
+                //btl3 lfo2
+                if (board[x - i][y] == "#") {
+                    return false;
+                }
+                i += 1;
+            }
+            i = 0;
+            while (x + i < board.length && board[x + i][y] != "–") {
+                // Bnzl lt7t
+                if (board[x + i][y] == "#") {
+                    return false;
+                }
+                i += 1;
+            }
+            i = 0;
+            while (y - i > 0 && board[x][y - i] != "–") {
+                //bro7 shnal
+                if (board[x][y - i] == "#") {
+                    return false;
+                }
+                i += 1;
+            }
+        }
+        else if (x == board.length - 1 && y != board[0].length - 1) {
+            // bottom
+            int i = 0;
+
+            while (x - i > 0 && board[x - i][y] != "–") {
+                // Btl3 lfo2
+                if (board[x - i][y] == "#") {
+                    return false;
+                }
+                i += 1;
+            }
+            i = 0;
+            while (y - i > 0 && board[x][y - i] != "–") {
+                // Bro7 shmal
+                if (board[x][y - i] == "#") {
+                    return false;
+                }
+                i += 1;
+            }
+            i = 0;
+            while (y + i > board[0].length && board[x][y + i] != "–") {
+                // Bro7 ymen
+                if (board[x][y + i] == "#") {
+                    return false;
+                }
+                i += 1;
+            }
+        }else {
+            // No boards
+            int i = 0;
+
+            while (x - i > 0 && board[x - i][y] != "–") {
+                // Btl3 lfo2
+                if (board[x - i][y] == "#") {
+                    return false;
+                }
+                i += 1;
+            }
+            while (x + i < board.length && board[x + i][y] != "–") {
+                // Bnzl lt7t
+                if (board[x + i][y] == "#") {
+                    return false;
+                }
+                i += 1;
+            }
+            i = 0;
+            while (y - i > 0 && board[x][y - i] != "–") {
+                // Bro7 shmal
+                if (board[x][y - i] == "#") {
+                    return false;
+                }
+                i += 1;
+            }
+            i = 0;
+            while (y + i > board[0].length && board[x][y + i] != "–") {
+                // Bro7 ymen
+                if (board[x][y + i] == "#") {
+                    return false;
+                }
+                i += 1;
+            }
+        }
+        return true;
+    }
 
 
 
@@ -451,22 +612,19 @@ public class Main {
             }
 
 
-            int x = rnd.nextInt(board.length);
-            int y = rnd.nextInt(board[0].length);
+            int x = rnd.nextInt(board.length-1);
+            int y = rnd.nextInt(board[0].length-1);
 
             x += 1;
             y += 1;
             status = shoot(x,y,board,guessingBoard,pcBoard,pcGuessingBoard,"pc",userNumberOfShips,pcNumberOfShips);
             while (status=="false"){
-                x = rnd.nextInt(board.length);
-                y = rnd.nextInt(board[0].length);
+                x = rnd.nextInt(board.length-1);
+                y = rnd.nextInt(board[0].length-1);
                 x += 1;
                 y += 1;
                 status = shoot(x,y,board,guessingBoard,pcBoard,pcGuessingBoard,"pc",userNumberOfShips,pcNumberOfShips);
             }
-            x -= 1;
-            y -= 1;
-            System.out.println("The computer attacked ("+x+", "+y+")");
             printBoard(board,0);
             printBoard(guessingBoard,1);
             if (status == "done"){
