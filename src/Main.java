@@ -293,7 +293,7 @@ public class Main {
         return counter;
     }
 
-    public static String shoot(int x, int y, String[][] userBoard, String[][] userGuessingBoard, String[][] pcBoard, String[][] pcGuessingBoard, String user, int userNumberOfShips,int pcNumberOfShips) {
+    public static String shoot(int x, int y, String[][] userBoard, String[][] userGuessingBoard, String[][] pcBoard, String[][] pcGuessingBoard, String user, int userNumberOfShips[],int pcNumberOfShips[]) {
         if (user == "user") {
             if (x <= 0 | x > userBoard.length - 1 | y <= 0 | y > userBoard[0].length - 1) {
                 System.out.println("Illegal tile, try again!");
@@ -308,10 +308,10 @@ public class Main {
                 userGuessingBoard[x][y] = "V";
                 pcBoard[x][y] = "X";
                 if (checkIfDrowned(pcBoard, x, y)==true){
-                    pcNumberOfShips -= 1;
-                    System.out.println("The computer's battleship has been drowned, "+pcNumberOfShips+ " more battleships to go!");
+                    pcNumberOfShips[0] -= 1;
+                    System.out.println("The computer's battleship has been drowned, "+pcNumberOfShips[0]+ " more battleships to go!");
                 }
-                if (pcNumberOfShips == 0) {
+                if (pcNumberOfShips[0] == 0) {
                     System.out.println("You won the game!");
                     return "done";
                 }
@@ -338,10 +338,10 @@ public class Main {
                 pcGuessingBoard[x][y] = "V";
                 userBoard[x][y] = "X";
                 if (checkIfDrowned(userBoard, x, y)==true){
-                    userNumberOfShips -= 1;
-                    System.out.println("Your battleship has been drowned, you have left " +userNumberOfShips+ " more battleships!");
+                    userNumberOfShips[0] -= 1;
+                    System.out.println("Your battleship has been drowned, you have left " +userNumberOfShips[0]+ " more battleships!");
                 }
-                if (userNumberOfShips == 0) {
+                if (userNumberOfShips[0] == 0) {
                     return "done";
                 }
                 return "true";
@@ -524,6 +524,7 @@ public class Main {
                 }
                 i += 1;
             }
+            i = 0;
             while (x + i < board.length && board[x + i][y] != "–") {
                 // Bnzl lt7t
                 if (board[x + i][y] == "#") {
@@ -540,7 +541,7 @@ public class Main {
                 i += 1;
             }
             i = 0;
-            while (y + i > board[0].length && board[x][y + i] != "–") {
+            while (y + i < board[0].length && board[x][y + i] != "–") {
                 // Bro7 ymen
                 if (board[x][y + i] == "#") {
                     return false;
@@ -621,18 +622,21 @@ public class Main {
             }
         }
 
-        int userNumberOfShips = numeberOfShips(battleShipSizes);
-        int pcNumberOfShips = numeberOfShips(battleShipSizes);
+        int[] userNumberOfShips = new int[1];
+        userNumberOfShips[0] = numeberOfShips(battleShipSizes);
+        int[] pcNumberOfShips = new int[1];
+        pcNumberOfShips[0] = numeberOfShips(battleShipSizes);
+
 
         printBoard(board,0);
         setUpBoard(board,battleShipSizes);
         printBoard(guessingBoard,1);
         setUpPc(pcBoard,battleShipSizes);
-        System.out.println("ZZZZZZZZZZZZZZZZ");
-        printBoard(pcBoard,0);
+//        System.out.println("ZZZZZZZZZZZZZZZZ");
+//        printBoard(pcBoard,0);
 
 
-        while(userNumberOfShips > 0 && pcNumberOfShips > 0){
+        while(userNumberOfShips[0] > 0 && pcNumberOfShips[0] > 0){
             System.out.println("Enter a tile to attack");
             int[] userCordinates = placement(scanner.nextLine());
 //            System.out.print(userCordinates[0]+" ");
